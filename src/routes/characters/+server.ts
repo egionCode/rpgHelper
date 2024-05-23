@@ -1,9 +1,9 @@
-import { list, store, update } from "$lib/db/mongo";
 import { json } from "@sveltejs/kit";
+import characterModel from "$lib/db/model/character";
 
 export async function GET() {
     return json(
-        await list('characters')
+        await characterModel.find().exec()
     )
 }
 export async function POST({ request }) {
@@ -11,10 +11,14 @@ export async function POST({ request }) {
     let char = await request.json();
 
     if (char._id)
-        await update('characters', char)
+        await characterModel.findByIdAndUpdate(char._id, char).exec()
     else
-        await store('characters', char)
+        await characterModel.create(char)
 
     return json(request.body)
 
+}
+export async function DELETE({ url }) {
+    let res = await characterModel.findByIdAndDelete(url.searchParams.get('id')).exec();
+    return new Response();
 }

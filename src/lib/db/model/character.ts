@@ -31,4 +31,5 @@ const CharacterSchema = new Schema<Character>({
 })
 
 const characterModel = model<Character>('characters', CharacterSchema);
+
 export default characterModel;

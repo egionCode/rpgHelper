@@ -42,7 +42,6 @@
 				abilities: null,
 				obs: null
 			};
-		console.log(char);
 		dialog.showModal();
 	}
 	async function save() {
@@ -56,7 +55,19 @@
 		dialog.close();
 		listar();
 	}
-	let fileinput;
+	async function remove() {
+		if (confirm('Deseja remover este personagem?') == true) {
+			let res = await fetch('/characters?id=' + selected_char._id, {
+				method: 'DELETE',
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			});
+			dialog.close();
+			listar();
+		}
+	}
+	let fileinput: any;
 	async function onFileSelected(fike: any) {
 		let reader = new FileReader();
 		reader.readAsDataURL(fike.target.files[0]);
@@ -220,6 +231,12 @@
 				</div>
 			</div>
 			<div class="w-full justify-evenly flex flex-row pt-3">
+				<button
+					on:click={() => remove()}
+					class="p-1 absolute left-4 bottom-6 rounded-full h-fit pt-1 text-white shadow"
+				>
+					<i class="material-symbols-rounded">delete</i>
+				</button>
 				<button class="rpgui-button" on:click={() => dialog.close()}>Cancelar</button>
 				<button class="rpgui-button" on:click={save}>Salvar</button>
 			</div>
@@ -228,12 +245,12 @@
 </dialog>
 
 <style>
-	select option{
+	select option {
 		color: white;
 		background-color: #4d4a4e;
 		margin: 10px;
 	}
-	input{
+	input {
 		margin-top: 3px;
 	}
 </style>
