@@ -1,0 +1,21 @@
+services:
+  rpg-helper:
+    image: rpg-helper
+    build:
+      context: .
+    ports:
+      - 3000:5173
+    networks:
+      - local
+  db:
+    image: mongo
+    ports:
+      - 27017
+    networks:
+      - local
+    volumes:
+      - /var/data/mongodb:/data/db
+networks:
+  local:
+    driver: bridge
+    
