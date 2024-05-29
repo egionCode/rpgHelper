@@ -20,6 +20,7 @@
 	function nextLog() {
 		if (rodada + 2 > rodadas.length) rodadas.push([{}]);
 		rodada++;
+		logs.push();
 		logs = rodadas[rodada];
 	}
 	function prevLog() {
