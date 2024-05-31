@@ -35,72 +35,107 @@
 </script>
 
 <div class="flex flex-col h-screen justify-center items-center">
-	<div class="rpgui-container framed w-full h-full lg:w-2/3 lg:h-2/3">
+	<div class="rpgui-container framed w-full h-full overflow-auto">
+		<div class="flex flex-row w-full gap-40">
+			<div class="w-52">
+				<a href="/" class="rpgui-button">
+					<p>
+						<span class="material-symbols-rounded"> chevron_left </span>
+						Back
+					</p>
+				</a>
+			</div>
+			<div class="flex flex-row justify-start w-full items-center gap-20">
+				<button class="rpgui-button" on:click={prevLog}>
+					<i class="material-symbols-rounded"> chevron_left </i>
+				</button>
+				<span>Rodada {rodada}</span>
+				<button class="rpgui-button" on:click={nextLog}>
+					<i class="material-symbols-rounded"> chevron_right </i>
+				</button>
+			</div>
+		</div>
 		<div class="flex flex-row">
 			<div class="flex flex-col w-full">
 				<span>Rodadas</span>
 				<div class="flex flex-col">
-					<div class="flex flex-row justify-center items-center gap-20">
-						<button class="rpgui-button" on:click={prevLog}>
-							<i class="material-symbols-rounded"> chevron_left </i>
-						</button>
-						<span>Rodada {rodada}</span>
-						<button class="rpgui-button" on:click={nextLog}>
-							<i class="material-symbols-rounded"> chevron_right </i>
-						</button>
-					</div>
-					<table>
-						{#each logs as log}
-							<tr>
-								<td>
-									<input
-										type="text"
-										placeholder="nome"
-										bind:value={log.name}
-										on:keyup={handleKeyup}
-										use:init
-										class="border border-b-2 border-r-2 rounded"
-									/>
-								</td>
-								<td>
-									<input
-										type="text"
-										placeholder="Dano Recebido"
-										class="border border-b-2 border-r-2 rounded"
-									/>
-								</td>
-								<td>
-									<input
-										type="text"
-										placeholder="Dano Causado"
-										class="border border-b-2 border-r-2 rounded"
-									/>
-								</td>
-								<td>
-									<input
-										type="text"
-										placeholder="Cura Recebida"
-										class="border border-b-2 border-r-2 rounded"
-									/>
-								</td>
-								<td>
-									<input
-										type="text"
-										placeholder="Cura Realizada"
-										class="border border-b-2 border-r-2 rounded"
-									/>
-								</td>
-								<td>
-									<input
-										type="text"
-										bind:value={log.vida}
-										placeholder="Vida"
-										class="border border-b-2 border-r-2 rounded"
-									/>
-								</td>
-							</tr>
-						{/each}
-					</table>
+					{#each logs as log}
+						<div class="w-full flex flex-row gap-2 px-1">
+							<div class="flex flex-col">
+								<label for="">Nome</label>
+								<input
+									type="text"
+									placeholder="nome"
+									bind:value={log.name}
+									on:keyup={handleKeyup}
+									use:init
+									class="border border-b-2 border-r-2 rounded"
+								/>
+							</div>
+
+							<div class="flex flex-col">
+								<label for="">Nome</label>
+								<input
+									type="text"
+									placeholder="nome"
+									bind:value={log.name}
+									on:keyup={handleKeyup}
+									use:init
+									class="border border-b-2 border-r-2 rounded"
+								/>
+							</div>
+
+							<div class="flex flex-col">
+								<label for="">Nome</label>
+								<input
+									type="text"
+									placeholder="nome"
+									bind:value={log.name}
+									on:keyup={handleKeyup}
+									use:init
+									class="border border-b-2 border-r-2 rounded"
+								/>
+							</div>
+
+							<div class="flex flex-col">
+								<label for="">Nome</label>
+								<input
+									type="text"
+									placeholder="nome"
+									bind:value={log.name}
+									on:keyup={handleKeyup}
+									use:init
+									class="border border-b-2 border-r-2 rounded"
+								/>
+							</div>
+
+							<div class="flex flex-col">
+								<label for="">Nome</label>
+								<input
+									type="text"
+									placeholder="nome"
+									bind:value={log.name}
+									on:keyup={handleKeyup}
+									use:init
+									class="border border-b-2 border-r-2 rounded"
+								/>
+							</div>
+
+							<div class="flex flex-col">
+								<label for="">Nome</label>
+								<input
+									type="text"
+									placeholder="nome"
+									bind:value={log.name}
+									on:keyup={handleKeyup}
+									use:init
+									class="border border-b-2 border-r-2 rounded"
+								/>
+							</div>
+						</div>
+
+						<hr class="my-2" />
+					{/each}
 				</div>
 			</div>
 		</div>
