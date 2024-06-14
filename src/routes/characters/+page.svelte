@@ -200,9 +200,9 @@
 						<div class="flex-col flex lg:w-32 w-full px-2 py-1">
 							<span>Tipo</span>
 							<select class="rpgui-dropdown" bind:value={selected_char.type}>
-								<option value="option1">Herói</option>
-								<option value="option2">Inimigo</option>
-								<option value="option2">NPC</option>
+								<option value="hero">Herói</option>
+								<option value="foe">Inimigo</option>
+								<option value="npc">NPC</option>
 							</select>
 						</div>
 						<div class="flex-col flex lg:w-32 w-full px-2 py-1">

@@ -1,16 +1,22 @@
 services:
   rpg-helper:
-    image: rpg-helper
+    depends_on:
+      - db
+    image: egionvictor/rpg-helper
     build:
       context: .
+    environment:
+      - MONGO_URL="mongodb://db:27017/rpg-helper"
     ports:
-      - 3000:5173
+      - 3000:3000
     networks:
       - local
   db:
     image: mongo
+    environment:
+      - MONGO_INITDB_DATABASE=rpg-helper
     ports:
-      - 27017
+      - 27016:27017
     networks:
       - local
     volumes:

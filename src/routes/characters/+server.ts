@@ -1,7 +1,13 @@
 import { json } from "@sveltejs/kit";
 import characterModel from "$lib/db/model/character";
 
-export async function GET() {
+export async function GET({ url }) {
+    let filters = url.searchParams.get('filters');
+    console.log(JSON.parse(filters))
+    if(filters)
+        return json(
+            await characterModel.find(JSON.parse(filters)).exec()
+        )
     return json(
         await characterModel.find().exec()
     )
