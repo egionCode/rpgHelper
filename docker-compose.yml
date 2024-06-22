@@ -5,8 +5,6 @@ services:
     image: egionvictor/rpg-helper
     build:
       context: .
-    environment:
-      - MONGO_URL="mongodb://db:27017/rpg-helper"
     ports:
       - 3000:3000
     networks:

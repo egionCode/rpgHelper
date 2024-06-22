@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { type Log } from '$lib/db/model/log';
+	import Loader from '$lib/components/loader.svelte';
 	import { type Character } from '$lib/db/model/character';
 	var rodada = 0;
-	var loading = false;
+	let loading = true;
 	var combat_log: Log = {
 		status: false,
 		combat: '',
@@ -28,7 +29,8 @@
 			newCombat.turns[0] = characters.map((c) => {
 				return {
 					name: c.name,
-					hp: c.hp
+					hp: c.hp,
+					max_hp: c.hp
 				};
 			});
 		}
@@ -49,21 +51,34 @@
 	//handle keys inside logs
 	function handleKeyup($e, index) {
 		if ($e.key == 'Enter') {
+			combat_log.turns[rodada].sort((a: any, b: any) => Number(b.init) - Number(a.init));
 			if (index == combat_log.turns[rodada].length - 1) {
 				combat_log.turns[rodada].push({
 					name: ''
 				});
-				combat_log.turns[rodada].sort((a: any, b: any) => Number(b.init) - Number(a.init));
 			}
 			combat_log = combat_log;
 		}
 	}
 
+	//make some calculations
 	function handleBlur($e, index) {
-		console.log('ues');
-		console.log();
+		combat_log.turns[rodada][index].hp =
+			(rodada == 0
+				? combat_log.turns[rodada][index].max_hp
+				: combat_log.turns[rodada - 1][index].hp) -
+			(Number(combat_log.turns[rodada][index].damage_taken) || 0) +
+			(Number(combat_log.turns[rodada][index].heal_taken) || 0);
 	}
 	async function nextLog() {
+		combat_log.turns[rodada].forEach((turn) => {
+			total.max_damage =
+				turn.damage_given > total.max_damage ? turn.damage_given : total.max_damage;
+			total.heal_given += Number(turn.heal_given) || 0;
+			total.damage_given += Number(turn.damage_given) || 0;
+		});
+		console.log(total.max_damage);
+		combat_log.turns[rodada].turn_finished = true;
 		if (!combat_log.turns[rodada + 1]) combat_log.turns.push(newLogEntry());
 		rodada++;
 		await save();
@@ -73,6 +88,7 @@
 		combat_log = combat_log;
 	}
 	async function endCombat() {
+		loading = true;
 		combat_log.status = true;
 		await save();
 		rodada = 0;
@@ -111,6 +127,9 @@
 		}
 	});
 </script>
+
+<Loader bind:loading></Loader>
+
 
 <div class="flex flex-col h-screen justify-center items-center">
 	<div class="rpgui-container framed w-full h-full overflow-auto justify-around">
@@ -185,6 +204,7 @@
 							<div class="w-max flex flex-row gap-3 px-1 pb-3 items-center justify-center">
 								<span class="mr-2">{i + 1}°</span>
 								<button
+									disabled={combat_log.turns.length > 1}
 									on:click={() => removeLog(i)}
 									class=" bg-red-500 p-4 h-full rounded-lg flex flex-col items-center mr-2 pt-6 w-16"
 								>
@@ -198,7 +218,7 @@
 								>
 									<i class="ra {l.enemy ? ' ra-monster-skull' : 'ra-player'} ra-lg"></i>
 								</button>
-								<div class="flex flex-col w-14 text-center gap-2">
+								<div class="flex flex-col w-14 text-center gap-2 ml-3">
 									<label for="">
 										<i class="ra ra-cycle ra-2x text-green-500"></i>
 									</label>
@@ -207,18 +227,21 @@
 										bind:value={l.init}
 										on:blur={($e) => handleBlur($e, i)}
 										on:keyup={($e) => handleKeyup($e, i)}
+										use:init
 										class="border border-b-2 border-r-2 rounded"
 									/>
 								</div>
-								<div class="flex flex-col w-56 pl-3 gap-3">
-									<label for=""> Nome </label>
+								<div class="flex flex-col w-56 pl-3 gap-2">
+									<label for="">
+										<i class="ra ra-player ra-2x"></i>
+									</label>
 									<input
 										type="text"
 										placeholder="Nome"
 										bind:value={l.name}
 										on:blur={($e) => handleBlur($e, i)}
 										on:keyup={($e) => handleKeyup($e, i)}
-										use:init
+										disabled={combat_log.turns[rodada].turn_finished}
 										class="border border-b-2 border-r-2 rounded"
 									/>
 								</div>
@@ -232,6 +255,7 @@
 										bind:value={l.damage_given}
 										on:blur={($e) => handleBlur($e, i)}
 										on:keyup={($e) => handleKeyup($e, i)}
+										disabled={combat_log.turns[rodada].turn_finished}
 										class="border border-b-2 border-r-2 rounded"
 									/>
 								</div>
@@ -245,6 +269,7 @@
 										bind:value={l.damage_taken}
 										on:blur={($e) => handleBlur($e, i)}
 										on:keyup={($e) => handleKeyup($e, i)}
+										disabled={combat_log.turns[rodada].turn_finished}
 										class="border border-b-2 border-r-2 rounded"
 									/>
 								</div>
@@ -257,6 +282,7 @@
 										bind:value={l.heal_given}
 										on:blur={($e) => handleBlur($e, i)}
 										on:keyup={($e) => handleKeyup($e, i)}
+										disabled={combat_log.turns[rodada].turn_finished}
 										class="border border-b-2 border-r-2 rounded"
 									/>
 								</div>
@@ -269,6 +295,7 @@
 										bind:value={l.heal_taken}
 										on:blur={($e) => handleBlur($e, i)}
 										on:keyup={($e) => handleKeyup($e, i)}
+										disabled={combat_log.turns[rodada].turn_finished}
 										class="border border-b-2 border-r-2 rounded"
 									/>
 								</div>
@@ -280,6 +307,7 @@
 										type="text"
 										bind:value={l.hp}
 										on:keyup={($e) => handleKeyup($e, i)}
+										disabled={combat_log.turns[rodada].turn_finished}
 										class="border border-b-2 border-r-2 rounded"
 									/>
 								</div>

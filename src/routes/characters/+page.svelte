@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import Loader from '$lib/components/loader.svelte';
 	let characters: any = [];
+	let loading = true;
 	onMount(() => {
 		listar();
 	});
@@ -21,8 +23,10 @@
 		obs: null
 	};
 	function listar() {
+		loading = true;
 		fetch('/characters').then(async (res) => {
 			characters = await res.json();
+			loading = false;
 		});
 	}
 	function openChar(char: any = null) {
@@ -45,6 +49,8 @@
 		dialog.showModal();
 	}
 	async function save() {
+		loading = true;
+		dialog.close();
 		let res = await fetch('/characters', {
 			method: 'POST',
 			headers: {
@@ -52,18 +58,18 @@
 			},
 			body: JSON.stringify(selected_char)
 		});
-		dialog.close();
 		listar();
 	}
 	async function remove() {
+		loading = true;
 		if (confirm('Deseja remover este personagem?') == true) {
+			dialog.close();
 			let res = await fetch('/characters?id=' + selected_char._id, {
 				method: 'DELETE',
 				headers: {
 					'Content-Type': 'application/json'
 				}
 			});
-			dialog.close();
 			listar();
 		}
 	}
@@ -77,33 +83,36 @@
 	}
 </script>
 
-<div class="flex flex-row w-full justify-between">
-	<a href="/" class="rpgui-button">
-		<p>
-			<span class="material-symbols-rounded"> chevron_left </span>
-			Back
-		</p>
-	</a>
-	<button on:click={() => openChar(null)} class="rpgui-button">
-		<p>
-			Novo
-			<span class="material-symbols-rounded"> add </span>
-		</p>
-	</button>
-</div>
+<div class="rpgui-container framed w-full h-full">
+	<div class="flex flex-row w-full justify-between">
+		<a href="/" class="rpgui-button">
+			<p>
+				<span class="material-symbols-rounded"> chevron_left </span>
+				Voltar
+			</p>
+		</a>
+		<button on:click={() => openChar(null)} class="rpgui-button">
+			<p>
+				Novo
+				<span class="material-symbols-rounded"> add </span>
+			</p>
+		</button>
+	</div>
 
-<div class="h-full flex flex-col justify-center">
-	<div class="flex flex-row w-full items-center justify-center gap-12 flex-wrap">
-		{#each characters as character}
-			<div
-				class="flex flex-col lg:w-48 lg:h-48 w-36 h-36 rounded-full bg-slate-800 hover:opacity-80 border-4 border-yellow-900"
-				on:click={() => openChar(character)}
-			>
-				<img src={character.avatar} alt="" class="w-full h-full object-cover rounded-full" />
-			</div>
-		{/each}
+	<div class="h-full flex flex-col p-24">
+		<div class="flex flex-row w-full items-center gap-12 flex-wrap">
+			{#each characters as character}
+				<div
+					class="rpgui-cursor-point flex flex-col lg:w-48 lg:h-48 w-36 h-36 rounded-full bg-slate-800 hover:opacity-80 border-4 border-yellow-900"
+					on:click={() => openChar(character)}
+				>
+					<img src={character.avatar} alt="" class="w-full h-full object-cover rounded-full" />
+				</div>
+			{/each}
+		</div>
 	</div>
 </div>
+
 <dialog bind:this={dialog}>
 	<div class="w-full h-full fixed bg-black opacity-25 top-0 left-0"></div>
 	<div class="flex flex-row w-full h-full items-center justify-center">
@@ -243,6 +252,7 @@
 		</div>
 	</div>
 </dialog>
+<Loader bind:loading></Loader>
 
 <style>
 	select option {
